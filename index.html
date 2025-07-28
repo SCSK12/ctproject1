@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로봇청소기 청소하기</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    h1 { color: #2d3e50; }
+    .grid { display: grid; grid-template-columns: repeat(5, 50px); gap: 5px; margin-top: 10px; }
+    .cell { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border: 1px solid #ccc; font-weight: bold; font-size: 18px; }
+    .robot { background-color: lightblue; }
+    .wall { background-color: lightcoral; }
+    .goal { background-color: lightgreen; }
+    .timer { margin-top: 20px; font-size: 18px; }
+    .problem-box { border: 2px solid #555; padding: 10px; margin-top: 15px; background-color: #f9f9f9; }
+  </style>
+</head>
+<body>
+  <h1>로봇청소기 청소하기</h1>
+
+  <p><strong>▶️ 대상 및 교과:</strong> 통합과학1</p>
+
+  <p><strong>▶️ 지문:</strong><br>
+    로봇 청소기가 아래 그림처럼 생긴 5×5 격자 방 안에 있습니다.<br>
+    로봇은 현재 시작 위치(0,0)에 있고, 장애물(X)을 피해 쓰레기 더미(G)까지 이동해야 합니다.<br>
+    로봇은 한 번에 상, 하, 좌, 우로 한 칸씩만 움직일 수 있습니다.<br>
+    로봇이 G까지 도달할 수 있는 최소 이동 횟수를 구하세요.
+  </p>
+
+  <p><strong>▶️ 규칙:</strong><br>
+    - 로봇은 상, 하, 좌, 우 네 방향 중 하나로 이동 가능<br>
+    - 장애물(X)은 통과 불가<br>
+    - 격자 밖으로 나갈 수 없음<br>
+    - 시작점: (0,0), 목표지점: G
+  </p>
+
+  <div class="problem-box">
+    <strong>▶️ 문제:</strong><br>
+    아래 격자에서 로봇(R)을 G까지 이동시키세요. 방향키를 이용해 로봇을 움직여보세요. 최소 이동 횟수는 얼마인지 생각해보세요.
+  </div>
+
+  <br>
+  <label>▶️ 시간설정: </label>
+  <select id="timeSelect">
+    <option value="30">30초</option>
+    <option value="60">1분</option>
+    <option value="90">1분30초</option>
+    <option value="120">2분</option>
+  </select>
+  <button onclick="startProblem()">문제 풀기 시작</button>
+
+  <div class="timer" id="timer"></div>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const initialMap = [
+      ['R', '', '', '', ''],
+      ['X', '', '', '', 'X'],
+      ['', 'X', '', '', ''],
+      ['X', '', 'X', '', 'X'],
+      ['', '', '', '', 'G']
+    ];
+
+    let robotPosition = { row: 0, col: 0 };
+    let countdown;
+
+    function renderGrid() {
+      const gridEl = document.getElementById('grid');
+      gridEl.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          const value = initialMap[i][j];
+          if (value === 'X') cell.classList.add('wall');
+          else if (value === 'G') cell.classList.add('goal');
+          if (robotPosition.row === i && robotPosition.col === j) {
+            cell.classList.add('robot');
+            cell.textContent = 'R';
+          } else {
+            cell.textContent = value;
+          }
+          gridEl.appendChild(cell);
+        }
+      }
+    }
+
+    function startProblem() {
+      robotPosition = { row: 0, col: 0 };
+      renderGrid();
+      let time = parseInt(document.getElementById('timeSelect').value);
+      document.getElementById('timer').textContent = `▶️ 남은 시간: ${time} 초`;
+      clearInterval(countdown);
+      countdown = setInterval(() => {
+        time--;
+        document.getElementById('timer').textContent = `▶️ 남은 시간: ${time} 초`;
+        if (time <= 0) {
+          clearInterval(countdown);
+          alert('⏱️ 시간이 종료되었습니다! 다시 도전해보세요.');
+          if (confirm('다시 시도하시겠습니까?')) {
+            startProblem();
+          }
+        }
+      }, 1000);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const dir = { row: 0, col: 0 };
+      if (e.key === 'ArrowUp') dir.row = -1;
+      else if (e.key === 'ArrowDown') dir.row = 1;
+      else if (e.key === 'ArrowLeft') dir.col = -1;
+      else if (e.key === 'ArrowRight') dir.col = 1;
+      else return;
+
+      const newRow = robotPosition.row + dir.row;
+      const newCol = robotPosition.col + dir.col;
+      if (newRow < 0 || newRow >= 5 || newCol < 0 || newCol >= 5) return;
+      if (initialMap[newRow][newCol] === 'X') return;
+
+      robotPosition = { row: newRow, col: newCol };
+      renderGrid();
+
+      if (initialMap[newRow][newCol] === 'G') {
+        clearInterval(countdown);
+        setTimeout(() => alert('🎉 축하합니다! G에 도달했습니다!'), 100);
+      }
+    });
+  </script>
+</body>
+</html>
+
