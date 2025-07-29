@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as htmlviewer
+st.set_page_config(layout='wide', page_title='DNA sequencying!!!')
 # Title Msg#1
 st.title('This is Sky Webapp!!')
 
@@ -27,6 +28,10 @@ with col1:
         st.info('Content..')
         st.video(url)
 
+    with st.expander('Image ...'):
+        imgfilepath = './images/물분자.jpg'
+        st.image(imgfilepath)
+
     with st.expander('Content #2...'):
         #st.write(html, unsafe_allow_html=True)
         htmlviewer.html(html,height=600)
@@ -34,6 +39,8 @@ with col1:
     with st.expander('Content #3...'):
         #st.write(html, unsafe_allow_html=True)
         htmlviewer.html(html,height=600)
+
+    
 
 with col2:
     with st.expander('Tips..'):
